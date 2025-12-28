@@ -6,35 +6,35 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
-
-// Base model with common fields
-model BaseModel {
-  id        String   @id @default(cuid())
+model User {
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isActive  Boolean  @default(true)
   deletedAt DateTime?
+
+  email String   @unique
+  name  String?
+  posts Post[]
 }
 
-// Example User model
-model User extends BaseModel {
-  email     String   @unique
-  name      String?
-  posts     Post[]
-}
+model Post {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isActive  Boolean  @default(true)
+  deletedAt DateTime?
 
-model Post extends BaseModel {
-  title   String
-  content String?
-  author  User   @relation(fields: [authorId], references: [id])
-  authorId String
-}
+  title     String
+  content   String?
+  published Boolean  @default(false)
 
+  author   User? @relation(fields: [authorId], references: [id])
+  authorId Int?
+}
